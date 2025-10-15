@@ -1,12 +1,13 @@
-// FIX: Add triple-slash directive to fix TypeScript error for `import.meta.env`
-/// <reference types="vite/client" />
+// FIX: Type cast `import.meta` to `any` to bypass TypeScript errors in environments
+// where `vite/client` types might not be properly configured (e.g., missing tsconfig.json).
+// This resolves issues with accessing `import.meta.env`.
 
 import type { VideoData } from '../types';
 import { VideoPlatform } from '../types';
 
 // Use the Vite environment variable for the API base URL.
 // Fallback to localhost for local development.
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:4000';
 
 // FIX: Removed Gemini API key and client initialization from the frontend.
 // API calls are now securely handled by the backend server.

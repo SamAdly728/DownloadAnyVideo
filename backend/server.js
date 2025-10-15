@@ -6,8 +6,8 @@
 
 const express = require('express');
 const cors = require('cors');
-// FIX: Import GoogleGenAI for server-side API calls
-const { GoogleGenAI } = require('@google/genai');
+// FIX: Import GoogleGenAI and Type for server-side API calls
+const { GoogleGenAI, Type } = require('@google/genai');
 
 const app = express();
 // Render provides a PORT environment variable.
@@ -41,15 +41,16 @@ app.post('/api/analyze-platform', async (req, res) => {
   try {
     const model = 'gemini-2.5-flash';
     // Define the response schema for the AI model
+    // DOC: Using the Type enum for schema definition as per @google/genai guidelines.
     const schema = {
-      type: 'OBJECT',
+      type: Type.OBJECT,
       properties: {
         platform: {
-          type: 'STRING',
+          type: Type.STRING,
           description: "The name of the video platform (e.g., YouTube, TikTok, Instagram, Facebook, Vimeo, X). Should be 'Unknown' if the platform cannot be identified or the URL is invalid.",
         },
         isValid: {
-          type: 'BOOLEAN',
+          type: Type.BOOLEAN,
           description: "True if the URL is a valid and recognizable video platform URL, otherwise false.",
         }
       },

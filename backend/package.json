@@ -9,8 +9,9 @@
   "author": "AI Studio",
   "license": "ISC",
   "dependencies": {
+    "@google/genai": "^1.25.0",
     "cors": "^2.8.5",
     "express": "^4.19.2",
-    "yt-dlp-exec": "^3.0.4"
+    "yt-dlp-exec": "3.0.4"
   }
 }
