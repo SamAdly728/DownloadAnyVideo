@@ -1,3 +1,4 @@
+
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
@@ -5,8 +6,8 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    // This allows the frontend (default on 5173) to proxy API requests
-    // to the backend server (on 4000) to avoid CORS issues during development.
+    // This proxies API requests like `/api/analyze-platform`
+    // to your backend server running on port 4000 during development.
     proxy: {
       '/api': {
         target: 'http://localhost:4000',

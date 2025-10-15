@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { VideoInput } from './components/VideoInput';
 import { VideoDisplay } from './components/VideoDisplay';
@@ -11,7 +12,7 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleAnalyze = async (url: string) => {
-    if (!url) {
+    if (!url.trim()) {
       setError('Please enter a video URL.');
       return;
     }
@@ -25,11 +26,12 @@ const App: React.FC = () => {
       if (data.isValid && data.platform !== 'Unknown') {
         setVideoData(data);
       } else {
-        setError('Could not identify the video platform from the URL. Please check the URL and try again.');
+        setError(data.description || 'Could not identify the video platform. Please check the URL and try again.');
       }
     } catch (err) {
       console.error(err);
-      setError('An error occurred while analyzing the URL. Please try again later.');
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
+      setError(`An error occurred: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }
