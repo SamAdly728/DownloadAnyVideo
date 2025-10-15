@@ -1,14 +1,15 @@
-import { GoogleGenAI, Type } from "@google/genai";
+// FIX: Add triple-slash directive to fix TypeScript error for `import.meta.env`
+/// <reference types="vite/client" />
+
 import type { VideoData } from '../types';
 import { VideoPlatform } from '../types';
 
 // Use the Vite environment variable for the API base URL.
 // Fallback to localhost for local development.
-// FIX: Changed import.meta.env to process.env to resolve TypeScript error. It's assumed the build process will handle this.
-const API_BASE_URL = process.env.VITE_API_BASE_URL || 'http://localhost:4000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
 
-// FIX: Aligned with @google/genai coding guidelines to use process.env.API_KEY for the API key, which also resolves a TypeScript error.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// FIX: Removed Gemini API key and client initialization from the frontend.
+// API calls are now securely handled by the backend server.
 
 const FALLBACK_MOCK_DATA = {
   title: "Example Video Title (Frontend Fallback)",
@@ -17,7 +18,8 @@ const FALLBACK_MOCK_DATA = {
 };
 
 export const analyzeVideoUrl = async (url: string): Promise<VideoData> => {
-  const platformData = await getPlatformFromGemini(url);
+  // FIX: Call our own backend to analyze the platform instead of Gemini directly.
+  const platformData = await getPlatformFromServer(url);
 
   if (!platformData.isValid || platformData.platform === VideoPlatform.Unknown) {
     return {
@@ -57,40 +59,25 @@ export const analyzeVideoUrl = async (url: string): Promise<VideoData> => {
   }
 };
 
-const getPlatformFromGemini = async (url: string): Promise<{ platform: VideoPlatform | string; isValid: boolean }> => {
+// FIX: This function now calls our backend, which then calls Gemini.
+const getPlatformFromServer = async (url: string): Promise<{ platform: VideoPlatform | string; isValid: boolean }> => {
     try {
-        const model = 'gemini-2.5-flash';
-        const schema = {
-            type: Type.OBJECT,
-            properties: {
-                platform: {
-                    type: Type.STRING,
-                    description: "The name of the video platform (e.g., YouTube, TikTok, Instagram, Facebook, Vimeo, X). Should be 'Unknown' if the platform cannot be identified or the URL is invalid.",
-                },
-                isValid: {
-                    type: Type.BOOLEAN,
-                    description: "True if the URL is a valid and recognizable video platform URL, otherwise false.",
-                }
-            },
-            required: ["platform", "isValid"]
-        };
-
-        const prompt = `Analyze the following URL and identify the video platform. The URL is: ${url}. Respond with only a JSON object matching the provided schema.`;
-
-        const response = await ai.models.generateContent({
-            model,
-            contents: prompt,
-            config: {
-                responseMimeType: "application/json",
-                responseSchema: schema,
-            },
+        const response = await fetch(`${API_BASE_URL}/api/analyze-platform`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ url }),
         });
+
+        if (!response.ok) {
+          throw new Error(`Server responded with status: ${response.status}`);
+        }
         
-        const jsonString = response.text.trim();
-        return JSON.parse(jsonString) as { platform: string; isValid: boolean };
+        return await response.json();
 
     } catch (error) {
-        console.error("Error analyzing URL with Gemini API:", error);
+        console.error("Error analyzing URL with backend service:", error);
         return { platform: VideoPlatform.Unknown, isValid: false };
     }
 };
