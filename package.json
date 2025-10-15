@@ -1,0 +1,22 @@
+
+{
+  "name": "univideo-downloader-unified",
+  "version": "1.0.0",
+  "description": "Full-stack application to download videos from various platforms.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build": "cd frontend && npm install && npm run build",
+    "dev:server": "node server.js",
+    "dev:frontend": "cd frontend && npm run dev",
+    "postinstall": "npm run build"
+  },
+  "author": "AI Studio",
+  "license": "ISC",
+  "dependencies": {
+    "@google/genai": "^1.25.0",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "yt-dlp-exec": "3.0.2"
+  }
+}
