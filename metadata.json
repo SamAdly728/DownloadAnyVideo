@@ -1,5 +1,0 @@
-{
-  "name": "UniVideo Downloader",
-  "description": "An application that allows users to paste a video URL from various platforms, detects the platform using AI, and simulates a download process.",
-  "requestFramePermissions": []
-}
